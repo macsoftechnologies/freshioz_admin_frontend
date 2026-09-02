@@ -218,7 +218,7 @@ const Employees = () => {
             <Input label="Last Name" name="lastName" required placeholder="Enter last name" />
           </div>
           <Input label="Email Address" name="email" type="email" required placeholder="Enter email address" />
-          <Input label="Phone Number" name="phone" placeholder="Enter phone number (+91...)" />
+          <Input label="Phone Number" name="phone" placeholder="Enter phone number" />
           <div className="form-row">
             <Input label="Designation" name="designation" required placeholder="e.g. Sales Executive" />
             <div className="input-group">

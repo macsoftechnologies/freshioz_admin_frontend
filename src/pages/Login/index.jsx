@@ -1,28 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
-import { Mail, Lock, Eye, EyeOff, Leaf, Truck, ShieldCheck, HeadphonesIcon } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Leaf, Truck, ShieldCheck, HeadphonesIcon, User } from 'lucide-react';
 import { login } from '../../services/authService';
+import { useToast } from '../../context/ToastContext';
 import './Login.css';
 
 import logoImg from '../../assets/logo/freshioz_logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
-    const email = e.target.email.value;
+    const loginId = e.target.loginId.value.trim();
     const password = e.target.password.value;
 
+    const isMobile = /^\+?[0-9]{10,15}$/.test(loginId);
+    const loginPayload = isMobile ? { mobileNumber: loginId, password } : { email: loginId, password };
+
     try {
-      const response = await login({ email, password });
+      const response = await login(loginPayload);
 
       // Store token and user data
       if (response.token) {
@@ -35,7 +38,7 @@ const Login = () => {
 
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      addToast(err.response?.data?.message || 'Login failed. Please check your credentials.', 'error');
     } finally {
       setLoading(false);
     }
@@ -110,15 +113,14 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleLogin} className="auth-form" autoComplete="off">
-            {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
             <div className="form-group">
-              <label>Email Address</label>
+              <label>Mobile Number / Email</label>
               <div className="input-wrapper">
-                <Mail className="input-icon" size={20} />
+                <User className="input-icon" size={20} />
                 <input
-                  type="email"
-                  name="email"
-                  placeholder="Enter your email address"
+                  type="text"
+                  name="loginId"
+                  placeholder="Enter mobile number or email"
                   autoComplete="off"
                   required
                 />

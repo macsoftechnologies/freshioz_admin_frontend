@@ -7,8 +7,8 @@
   border-radius: 9999px;
 }
 
-.badge-active { background-color: #d1fae5; color: #065f46; }
-.badge-inactive { background-color: #fee2e2; color: #991b1b; }
+.badge-active, .badge-approved { background-color: #d1fae5; color: #065f46; }
+.badge-inactive, .badge-rejected { background-color: #fee2e2; color: #991b1b; }
 .badge-pending { background-color: #fef3c7; color: #92400e; }
 .badge-completed { background-color: #dbeafe; color: #1e40af; }
 .badge-cancelled { background-color: #f3f4f6; color: #374151; }

@@ -13,13 +13,16 @@
   background-color: var(--surface);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 600px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   max-height: 90vh;
   overflow: hidden; /* Ensures header bg respects border-radius */
 }
+
+.modal-sm { max-width: 450px; }
+.modal-md { max-width: 600px; }
+.modal-lg { max-width: 800px; }
 
 .modal-header {
   padding: 1.25rem 1.5rem;

@@ -26,6 +26,9 @@ const Onboarding = () => {
   // Modals
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
   const [selectedOnboarding, setSelectedOnboarding] = useState(null);
   const [onboardingType, setOnboardingType] = useState('APARTMENT');
 
@@ -93,6 +96,9 @@ const Onboarding = () => {
     try {
       await updateOnboardingStatus(selectedOnboarding.onboardingId || selectedOnboarding.id || selectedOnboarding._id, status, rejectionReason);
       setDetailsModalOpen(false);
+      setRejectModalOpen(false);
+      setApproveModalOpen(false);
+      setRejectionReason('');
       addToast(`Onboarding ${status} successfully`, 'success');
       fetchOnboardings();
     } catch (error) {
@@ -210,8 +216,8 @@ const Onboarding = () => {
             
             {selectedOnboarding.status === 'pending' && isAdmin && (
               <div className="form-actions mt-6 pt-4 border-t border-gray-100 flex justify-end gap-3">
-                <Button variant="danger" icon={<XCircle size={16} />} onClick={() => handleStatusChange('rejected', 'Rejected by Admin')}>Reject</Button>
-                <Button variant="success" icon={<CheckCircle size={16} />} onClick={() => handleStatusChange('approved')}>Approve</Button>
+                <Button variant="danger" icon={<XCircle size={16} />} onClick={() => { setRejectionReason(''); setRejectModalOpen(true); }}>Reject</Button>
+                <Button variant="success" icon={<CheckCircle size={16} />} onClick={() => setApproveModalOpen(true)}>Approve</Button>
               </div>
             )}
           </div>
@@ -265,6 +271,61 @@ const Onboarding = () => {
             <Button type="submit" variant="primary">Submit Request</Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Reject Confirmation Modal */}
+      <Modal 
+        isOpen={rejectModalOpen} 
+        onClose={() => setRejectModalOpen(false)}
+        title="Confirm Rejection"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setRejectModalOpen(false)}>Cancel</Button>
+            <Button 
+              variant="danger" 
+              onClick={() => handleStatusChange('rejected', rejectionReason)}
+              disabled={!rejectionReason.trim()}
+            >
+              Confirm Reject
+            </Button>
+          </>
+        }
+      >
+        <p style={{ marginBottom: '1rem' }}>Are you sure you want to reject the onboarding request for <strong>{selectedOnboarding?.communityName}</strong>?</p>
+        <div className="input-group">
+          <label className="input-label">Reason for Rejection <span style={{ color: 'red' }}>*</span></label>
+          <textarea 
+            className="textarea-input" 
+            rows="3" 
+            placeholder="e.g. Capacity metrics do not satisfy current delivery route rules."
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
+            autoFocus
+          ></textarea>
+        </div>
+      </Modal>
+
+      {/* Approve Confirmation Modal */}
+      <Modal 
+        isOpen={approveModalOpen} 
+        onClose={() => setApproveModalOpen(false)}
+        title="Confirm Approval"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setApproveModalOpen(false)}>Cancel</Button>
+            <Button 
+              variant="success" 
+              onClick={() => handleStatusChange('approved')}
+            >
+              Confirm Approve
+            </Button>
+          </>
+        }
+      >
+        <p style={{ marginBottom: '1rem' }}>Are you sure you want to approve the onboarding request for <strong>{selectedOnboarding?.communityName}</strong>?</p>
+        <p className="text-gray-500 text-sm">Once approved, this community will become active in the system.</p>
       </Modal>
     </div>
   );
