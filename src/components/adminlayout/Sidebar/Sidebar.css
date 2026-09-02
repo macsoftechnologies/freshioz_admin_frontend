@@ -1,0 +1,214 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 260px;
+  height: 100vh;
+  background-color: #1a4331;
+  /* Dark green */
+  color: white;
+  transition: left 0.3s ease;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.sidebar-open {
+  left: 0;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    position: relative;
+    left: 0;
+  }
+
+  .sidebar-collapsed {
+    width: 80px;
+  }
+
+  .sidebar-collapsed .nav-item span {
+    display: none;
+  }
+
+  .sidebar-collapsed .nav-badge {
+    display: none;
+  }
+
+  .sidebar-collapsed .nav-item {
+    justify-content: center;
+    padding: 0.75rem 0;
+  }
+
+  .sidebar-collapsed .brand {
+    padding: 0;
+  }
+
+  .lg-hidden {
+    display: none;
+  }
+}
+
+.sidebar-header {
+  height: 73px;
+  /* Matches navbar height roughly */
+  flex-shrink: 0;
+  padding: 0 1.5rem;
+  background-color: #ebecea;
+  /* Light background for logo visibility */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.brand img,
+.brand-logo-img {
+  max-width: 180px;
+  max-height: 80px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  mix-blend-mode: multiply;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.brand-fresh,
+.brand-z {
+  color: #1a4331;
+}
+
+.brand-icon-wrapper {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  margin: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-icon-bg {
+  position: absolute;
+}
+
+.brand-icon-leaf {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-subtitle {
+  font-size: 0.65rem;
+  color: #ff9800;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  letter-spacing: 0.5px;
+}
+
+.close-btn {
+  background-color: #1a4331;
+  border: none;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 1.25rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: #ff9800;
+}
+
+.sidebar-nav {
+  padding: 1.5rem 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  z-index: 2;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.85rem;
+  position: relative;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item-active {
+  background-color: white;
+  color: #1a4331;
+  font-weight: 600;
+}
+
+.nav-item-active:hover {
+  background-color: white;
+  color: #1a4331;
+}
+
+.nav-item-active .nav-icon {
+  color: #1a4331;
+}
+
+.nav-badge {
+  background-color: #ff9800;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  margin-left: auto;
+}
+
+.sidebar-footer-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background-image: url('/farm_bg.jpg');
+  background-size: cover;
+  background-position: bottom;
+  opacity: 0.8;
+  z-index: 1;
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+}

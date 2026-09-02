@@ -1,0 +1,214 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 73px;
+  flex-shrink: 0;
+  padding: 0 1.5rem;
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.navbar-left, .navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.menu-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.menu-btn:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f5f6f8;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  width: 400px;
+  max-width: 100%;
+}
+
+.search-icon {
+  color: #999;
+  margin-right: 0.5rem;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+
+.icon-btn:hover {
+  color: #333;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #ff9800;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #1a4331;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.user-info {
+  display: none;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.user-role {
+  font-size: 0.7rem;
+  color: #777;
+}
+
+.user-profile-container {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  width: 160px;
+  padding: 0.35rem 0;
+  z-index: 100;
+  border: 1px solid #f0f0f0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: #444;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f6f8;
+}
+
+.dropdown-item.logout {
+  color: #f44336;
+}
+
+.dropdown-item.logout:hover {
+  background-color: #ffebee;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #f0f0f0;
+  margin: 0.25rem 0;
+}
+
+@media (min-width: 640px) {
+  .user-info { display: flex; }
+}
+
+@media (min-width: 1024px) {
+  .lg-hidden { display: none; }
+}
+
+@media (max-width: 768px) {
+  .search-bar {
+    display: none;
+  }
+  .navbar {
+    padding: 0 1rem;
+  }
+  .navbar-left, .navbar-right {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .navbar {
+    padding: 0 0.5rem;
+  }
+  .navbar-left, .navbar-right {
+    gap: 0.5rem;
+  }
+  .avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}
