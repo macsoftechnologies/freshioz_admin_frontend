@@ -5,7 +5,7 @@ import { Mail, Lock, Eye, EyeOff, Leaf, Truck, ShieldCheck, HeadphonesIcon } fro
 import { login } from '../../services/authService';
 import './Login.css';
 
-import logoImg from '../../assets/logo/logo.png';
+import logoImg from '../../assets/logo/freshioz_logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,13 +17,13 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
+
     const email = e.target.email.value;
     const password = e.target.password.value;
-    
+
     try {
       const response = await login({ email, password });
-      
+
       // Store token and user data
       if (response.token) {
         localStorage.setItem('token', response.token);
@@ -32,7 +32,7 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(response.user));
         localStorage.setItem('UserType', response.user.role);
       }
-      
+
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
@@ -46,8 +46,8 @@ const Login = () => {
       {/* Left Side - Banner */}
       <div className="login-banner">
         <div className="banner-content">
-          <div className="banner-logo" style={{justifyContent: 'center', padding: '1rem'}}>
-            <img src={logoImg} alt="Freshioz Logo" style={{maxHeight: '60px', objectFit: 'contain', mixBlendMode: 'multiply'}} />
+          <div className="banner-logo" style={{ justifyContent: 'center', padding: '1rem' }}>
+            <img src={logoImg} alt="Freshioz Logo" style={{ maxHeight: '60px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
           </div>
 
           <div className="banner-text">
@@ -100,8 +100,8 @@ const Login = () => {
       {/* Right Side - Form */}
       <div className="login-form-side">
         <div className="login-form-container">
-          <div className="form-logo" style={{justifyContent: 'center'}}>
-            <img src={logoImg} alt="Freshioz Logo" style={{maxHeight: '70px', objectFit: 'contain', mixBlendMode: 'multiply'}} />
+          <div className="form-logo" style={{ justifyContent: 'center' }}>
+            <img src={logoImg} alt="Freshioz Logo" style={{ maxHeight: '70px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
           </div>
 
           <div className="form-header">
