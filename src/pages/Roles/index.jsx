@@ -115,17 +115,15 @@ const Roles = () => {
       render: (row) => (
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={(e) => openEditModal(e, row)}><Edit size={16} /></Button>
-          {!row.isSystem && (
-             <Button 
-               variant="ghost" 
-               size="sm" 
-               className={row.status === 'active' ? "text-danger" : "text-success"} 
-               onClick={(e) => confirmToggleStatus(e, row)}
-               title={row.status === 'active' ? 'Deactivate' : 'Activate'}
-             >
-               <Power size={16} />
-             </Button>
-          )}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={row.status === 'active' ? "text-danger" : "text-success"} 
+            onClick={(e) => confirmToggleStatus(e, row)}
+            title={row.status === 'active' ? 'Deactivate' : 'Activate'}
+          >
+            <Power size={16} />
+          </Button>
         </div>
       )
     }

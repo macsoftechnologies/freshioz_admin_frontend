@@ -39,6 +39,9 @@
 .btn-ghost { background-color: transparent; color: var(--text-primary); }
 .btn-ghost:hover:not(:disabled) { background-color: var(--background); }
 
+.btn-light-danger { background-color: #ffebee; color: #f44336; }
+.btn-light-danger:hover:not(:disabled) { background-color: #ffcdd2; }
+
 .spinner {
   width: 1rem;
   height: 1rem;

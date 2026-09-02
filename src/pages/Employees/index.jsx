@@ -163,6 +163,7 @@ const Employees = () => {
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
           />
+          <Button variant="light-danger" onClick={() => { setSearch(''); setRoleFilter(''); }}>Clear</Button>
         </div>
       </div>
 

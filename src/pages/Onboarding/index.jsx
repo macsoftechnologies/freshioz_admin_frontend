@@ -133,6 +133,7 @@ const Onboarding = () => {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           />
+          <Button variant="light-danger" onClick={() => { setSearch(''); setTypeFilter(''); setStatusFilter(''); }}>Clear</Button>
         </div>
       </div>
 

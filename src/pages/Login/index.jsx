@@ -51,7 +51,7 @@ const Login = () => {
           </div>
 
           <div className="banner-text">
-            <h2>Your Trusted Partner<br />for Fresh Fruits &<br />Vegetables in Bulk</h2>
+            <h2>Your Trusted Partner<br />for Fresh <span style={{ color: '#f57c00' }}>Fruits &<br />Vegetables</span> in Bulk</h2>
             <div className="leaf-divider">
               <Leaf size={16} color="#2e7d32" />
               <div className="divider-line"></div>

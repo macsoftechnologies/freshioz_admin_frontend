@@ -49,12 +49,12 @@ const Navbar = ({ onMenuClick }) => {
       </div>
       
       <div className="navbar-right">
-        <div className="notification-wrapper">
+        {/* <div className="notification-wrapper">
           <button className="icon-btn">
             <Bell size={20} />
           </button>
           <span className="notification-badge">3</span>
-        </div>
+        </div> */}
         <div className="user-profile-container" ref={dropdownRef}>
           <div className="user-profile" onClick={() => setIsProfileOpen(!isProfileOpen)}>
             <div className="avatar">{userInitials}</div>

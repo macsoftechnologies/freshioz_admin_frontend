@@ -385,7 +385,7 @@
 
   .login-form-side {
     padding: 2rem 1.5rem;
-    min-height: 100vh;
+    flex: 1;
     justify-content: center;
   }
   

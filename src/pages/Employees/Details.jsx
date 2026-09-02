@@ -134,6 +134,7 @@ const EmployeeDetails = () => {
               <label>End Date</label>
               <input type="date" className="date-input" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             </div>
+            <Button variant="light-danger" onClick={() => { setStartDate(''); setEndDate(''); }}>Clear</Button>
           </div>
         </div>
         
