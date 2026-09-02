@@ -6,7 +6,7 @@ import Select from '../../components/common/Select';
 import StatusBadge from '../../components/common/StatusBadge';
 import Modal from '../../components/common/Modal';
 import { useToast } from '../../context/ToastContext';
-import { Plus, Edit, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Edit, CheckCircle, XCircle, Filter } from 'lucide-react';
 import { getOnboardings, addOnboarding, updateOnboarding, updateOnboardingStatus } from '../../services/onboardingService';
 import { getUser } from '../../services/authService';
 import './Onboarding.css';
@@ -27,11 +27,16 @@ const Onboarding = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedOnboarding, setSelectedOnboarding] = useState(null);
+  const [onboardingType, setOnboardingType] = useState('APARTMENT');
 
-  const fetchOnboardings = async () => {
+  const fetchOnboardings = async (overrides = {}) => {
     setLoading(true);
     try {
-      const data = await getOnboardings({ search, status: statusFilter, type: typeFilter });
+      const data = await getOnboardings({ 
+        search: overrides.search !== undefined ? overrides.search : search, 
+        status: overrides.status !== undefined ? overrides.status : statusFilter, 
+        type: overrides.type !== undefined ? overrides.type : typeFilter 
+      });
       setOnboardings(Array.isArray(data) ? data : []);
     } catch (err) {
       addToast('Failed to load onboarding requests', 'error');
@@ -43,7 +48,14 @@ const Onboarding = () => {
 
   useEffect(() => {
     fetchOnboardings();
-  }, [search, statusFilter, typeFilter]);
+  }, []);
+
+  const handleClear = () => {
+    setSearch('');
+    setStatusFilter('');
+    setTypeFilter('');
+    fetchOnboardings({ search: '', status: '', type: '' });
+  };
 
   const handleRowClick = (onboarding) => {
     setSelectedOnboarding(onboarding);
@@ -100,7 +112,7 @@ const Onboarding = () => {
     <div className="onboarding-page">
       <div className="page-header">
         <h2>Community Onboarding</h2>
-        <Button onClick={() => setAddModalOpen(true)} icon={<Plus size={16} />}>
+        <Button onClick={() => { setOnboardingType('APARTMENT'); setAddModalOpen(true); }} icon={<Plus size={16} />}>
           New Onboarding
         </Button>
       </div>
@@ -133,7 +145,8 @@ const Onboarding = () => {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           />
-          <Button variant="light-danger" onClick={() => { setSearch(''); setTypeFilter(''); setStatusFilter(''); }}>Clear</Button>
+          <Button variant="primary" onClick={() => fetchOnboardings()} icon={<Filter size={16} />}>Filter</Button>
+          <Button variant="light-danger" onClick={handleClear}>Clear</Button>
         </div>
       </div>
 
@@ -216,7 +229,7 @@ const Onboarding = () => {
             <Input label="Community Name" name="communityName" required placeholder="e.g. Greenwood Regency" />
             <div className="input-group">
               <label className="input-label">Type</label>
-              <select name="type" required className="select-input">
+              <select name="type" required className="select-input" value={onboardingType} onChange={(e) => setOnboardingType(e.target.value)}>
                 <option value="APARTMENT">Apartment</option>
                 <option value="HOSTEL">Hostel</option>
               </select>
@@ -236,7 +249,9 @@ const Onboarding = () => {
           </div>
 
           <div className="form-row mt-3">
-            <Input label="Flats Count (Apt only)" name="flatsCount" type="number" placeholder="e.g. 450" />
+            {onboardingType === 'APARTMENT' && (
+              <Input label="Flats Count (Apt only)" name="flatsCount" type="number" placeholder="e.g. 450" />
+            )}
             <Input label="Residents Count" name="residentsCount" type="number" placeholder="e.g. 1200" />
           </div>
           

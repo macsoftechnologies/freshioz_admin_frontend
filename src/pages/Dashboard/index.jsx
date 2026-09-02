@@ -20,6 +20,13 @@ const categoryData = [
 ];
 
 const Dashboard = () => {
+  const formattedDate = new Date().toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+
   return (
     <div className="dashboard">
       <div className="dashboard-header-bar">
@@ -29,7 +36,7 @@ const Dashboard = () => {
         </div>
         <button className="date-picker-btn">
           <Calendar size={18} />
-          <span>Tue, 26 Aug 2025</span>
+          <span>{formattedDate}</span>
         </button>
       </div>
 

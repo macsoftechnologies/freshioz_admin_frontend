@@ -7,7 +7,7 @@ import Select from '../../components/common/Select';
 import StatusBadge from '../../components/common/StatusBadge';
 import Modal from '../../components/common/Modal';
 import { useToast } from '../../context/ToastContext';
-import { Plus, Edit, Power, User } from 'lucide-react';
+import { Plus, Edit, Power, User, Filter } from 'lucide-react';
 import { getEmployees, registerEmployee, toggleEmployeeStatus } from '../../services/employeeService';
 import { getRoles } from '../../services/roleService';
 import './Employees.css';
@@ -30,10 +30,13 @@ const Employees = () => {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
 
-  const fetchEmployees = async () => {
+  const fetchEmployees = async (overrides = {}) => {
     setLoading(true);
     try {
-      const data = await getEmployees({ search, role: roleFilter });
+      const data = await getEmployees({ 
+        search: overrides.search !== undefined ? overrides.search : search, 
+        role: overrides.role !== undefined ? overrides.role : roleFilter 
+      });
       // The API response might be an array or wrapped in an object. Assuming array based on doc:
       setEmployees(Array.isArray(data) ? data : (data.users || []));
     } catch (err) {
@@ -56,11 +59,14 @@ const Employees = () => {
 
   useEffect(() => {
     fetchRoles();
+    fetchEmployees();
   }, []);
 
-  useEffect(() => {
-    fetchEmployees();
-  }, [search, roleFilter]);
+  const handleClear = () => {
+    setSearch('');
+    setRoleFilter('');
+    fetchEmployees({ search: '', role: '' });
+  };
 
   const confirmToggleStatus = (e, employee) => {
     e.stopPropagation();
@@ -163,7 +169,8 @@ const Employees = () => {
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
           />
-          <Button variant="light-danger" onClick={() => { setSearch(''); setRoleFilter(''); }}>Clear</Button>
+          <Button variant="primary" onClick={() => fetchEmployees()} icon={<Filter size={16} />}>Filter</Button>
+          <Button variant="light-danger" onClick={handleClear}>Clear</Button>
         </div>
       </div>
 

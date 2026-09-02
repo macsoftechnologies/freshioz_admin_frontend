@@ -38,14 +38,7 @@ const Navbar = ({ onMenuClick }) => {
         <button className="menu-btn" onClick={onMenuClick}>
           <Menu size={20} />
         </button>
-        <div className="search-bar">
-          <Search size={18} className="search-icon" />
-          <input 
-            type="text" 
-            placeholder="Search products, orders, suppliers..." 
-            className="search-input"
-          />
-        </div>
+
       </div>
       
       <div className="navbar-right">

@@ -4,7 +4,7 @@ import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
 import Table from '../../components/common/Table';
 import { useToast } from '../../context/ToastContext';
-import { User, ArrowLeft } from 'lucide-react';
+import { User, ArrowLeft, Filter } from 'lucide-react';
 import { toggleEmployeeStatus } from '../../services/employeeService';
 import { getEmployeeOnboardings } from '../../services/onboardingService';
 import './Details.css';
@@ -30,11 +30,14 @@ const EmployeeDetails = () => {
     }
   }, [employee, navigate, addToast]);
 
-  const fetchOnboardings = async () => {
+  const fetchOnboardings = async (overrides = {}) => {
     if (!employee) return;
     setLoading(true);
     try {
-      const data = await getEmployeeOnboardings(id, { startDate, endDate });
+      const data = await getEmployeeOnboardings(id, { 
+        startDate: overrides.startDate !== undefined ? overrides.startDate : startDate, 
+        endDate: overrides.endDate !== undefined ? overrides.endDate : endDate 
+      });
       setOnboardings(Array.isArray(data) ? data : []);
     } catch (err) {
       addToast('Failed to load onboarding records', 'error');
@@ -45,7 +48,13 @@ const EmployeeDetails = () => {
 
   useEffect(() => {
     fetchOnboardings();
-  }, [id, startDate, endDate]);
+  }, [id]);
+
+  const handleClear = () => {
+    setStartDate('');
+    setEndDate('');
+    fetchOnboardings({ startDate: '', endDate: '' });
+  };
 
   const handleToggleStatus = async () => {
     try {
@@ -134,7 +143,8 @@ const EmployeeDetails = () => {
               <label>End Date</label>
               <input type="date" className="date-input" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             </div>
-            <Button variant="light-danger" onClick={() => { setStartDate(''); setEndDate(''); }}>Clear</Button>
+            <Button variant="primary" onClick={() => fetchOnboardings()} icon={<Filter size={16} />}>Filter</Button>
+            <Button variant="light-danger" onClick={handleClear}>Clear</Button>
           </div>
         </div>
         

@@ -109,7 +109,7 @@ const Login = () => {
             <p>Sign in to manage your Freshioz account</p>
           </div>
 
-          <form onSubmit={handleLogin} className="auth-form">
+          <form onSubmit={handleLogin} className="auth-form" autoComplete="off">
             {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
             <div className="form-group">
               <label>Email Address</label>
@@ -119,7 +119,7 @@ const Login = () => {
                   type="email"
                   name="email"
                   placeholder="Enter your email address"
-                  defaultValue="admin@freshioz.com"
+                  autoComplete="off"
                   required
                 />
               </div>
@@ -133,7 +133,7 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Enter your password"
-                  defaultValue="password"
+                  autoComplete="new-password"
                   required
                 />
                 <button
