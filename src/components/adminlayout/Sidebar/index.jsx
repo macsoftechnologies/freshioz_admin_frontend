@@ -38,7 +38,7 @@ const Sidebar = ({ isOpen, isCollapsed, onClose }) => {
               to={item.path}
               className={({ isActive }) => `nav-item ${isActive ? 'nav-item-active' : ''}`}
             >
-              <Icon size={20} className="nav-icon" />
+              <Icon size={18} className="nav-icon" />
               <span>{item.title}</span>
               {item.title === 'Orders' && (
                 <span className="nav-badge">12</span>

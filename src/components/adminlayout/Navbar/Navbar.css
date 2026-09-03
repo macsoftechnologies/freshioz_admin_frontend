@@ -19,18 +19,30 @@
 }
 
 .menu-btn {
-  background: transparent;
+  background: linear-gradient(135deg, #ff9800 0%, #ea580c 100%);
   border: none;
   cursor: pointer;
-  color: #555;
-  display: flex;
-  padding: 0.25rem;
-  border-radius: 4px;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.28);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .menu-btn:hover {
-  background-color: #f5f5f5;
-  color: #333;
+  background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+  color: #ffffff;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.menu-btn:active {
+  transform: scale(0.96);
 }
 
 .search-bar {

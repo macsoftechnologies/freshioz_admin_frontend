@@ -1,68 +1,218 @@
+/* ═══════════════════════════════════════════════════════════════
+   Modal.css — Premium Styled Modal with Brand Header & Animations
+═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --border-color: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --accent: #1a4331;
+  --accent-dim: rgba(26, 67, 49, 0.25);
+  --ok: #10b981;
+  --ok-bg: rgba(16, 185, 129, 0.15);
+  --risk: #ef4444;
+  --risk-bg: rgba(239, 68, 68, 0.15);
+  --warn: #f59e0b;
+  --warn-bg: rgba(245, 158, 11, 0.15);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Backdrop ────────────────────────────────────────────── */
+.beam-modal-backdrop,
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,0.5);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 10000010;
+  animation: beamBackdropIn 0.25s ease forwards;
+}
+
+@keyframes beamBackdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Positioner ──────────────────────────────────────────── */
+.beam-modal-positioner {
+  position: fixed;
+  inset: 0;
+  z-index: 10000020;
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 100;
-  padding: 1rem;
-}
-
-.modal-content {
-  background-color: var(--surface);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
-  overflow: hidden; /* Ensures header bg respects border-radius */
-}
-
-.modal-sm { max-width: 450px; }
-.modal-md { max-width: 600px; }
-.modal-lg { max-width: 800px; }
-
-.modal-header {
-  padding: 1.25rem 1.5rem;
-  background-color: var(--primary);
-  color: white;
-  border-bottom: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: white;
-}
-
-.modal-close {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-close:hover {
-  color: white;
-}
-
-.modal-body {
-  padding: 1.5rem;
+  align-items: flex-start;
+  padding: 40px 16px 32px;
   overflow-y: auto;
 }
 
+.beam-modal-positioner--centered {
+  align-items: center;
+  padding-top: 16px;
+}
+
+/* ── Dialog Panel ────────────────────────────────────────── */
+.beam-modal-dialog,
+.modal-content {
+  position: relative;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 90vh;
+  flex-shrink: 0;
+  animation: beamModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+@keyframes beamModalIn {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1);       }
+}
+
+/* ── Fullscreen ──────────────────────────────────────────── */
+.beam-modal--fullscreen {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: 100vh;
+  border-radius: 0;
+}
+
+/* ── Size Variants ───────────────────────────────────────── */
+.beam-modal-sm, .modal-sm { max-width: 440px;  }
+.beam-modal-md, .modal-md { max-width: 620px;  }
+.beam-modal-lg, .modal-lg { max-width: 880px;  }
+.beam-modal-xl, .modal-xl { max-width: 1100px; }
+
+/* ── Header with Freshioz Logo Orange Background ─────────── */
+.beam-modal-header,
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #ff9800 0%, #ea580c 100%);
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.beam-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.beam-modal-accent-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+}
+
+.beam-modal-title,
+.modal-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+/* ── Close Button ────────────────────────────────────────── */
+.beam-modal-close,
+.modal-close {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.beam-modal-close:hover,
+.modal-close:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* ── Body ────────────────────────────────────────────────── */
+.beam-modal-body,
+.modal-body {
+  padding: 24px;
+  color: var(--text-main);
+  background-color: #ffffff;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.beam-modal-body--scrollable {
+  overflow-y: auto;
+}
+
+.beam-modal-body::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.beam-modal-body::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.beam-modal-body::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.beam-modal-body::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.beam-modal-footer,
 .modal-footer {
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--border);
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .beam-modal-positioner {
+    padding: 16px 8px;
+  }
+
+  .beam-modal-header,
+  .modal-header,
+  .beam-modal-body,
+  .modal-body,
+  .beam-modal-footer,
+  .modal-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }

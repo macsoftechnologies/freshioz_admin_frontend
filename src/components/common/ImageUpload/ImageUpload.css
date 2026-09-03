@@ -13,22 +13,25 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1rem;
   font-size: 0.85rem;
-  font-weight: 500;
-  border: 1.5px dashed var(--border);
-  border-radius: var(--radius-md);
-  background-color: var(--surface);
-  color: var(--text-primary);
+  font-weight: 600;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  color: #1e293b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: inherit;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .image-upload-btn:hover:not(:disabled) {
-  border-color: var(--primary);
-  color: var(--primary);
-  background-color: rgba(76, 175, 80, 0.04);
+  border-color: #1a4331;
+  color: #1a4331;
+  background-color: #ecfdf5;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(26, 67, 49, 0.08);
 }
 
 .image-upload-btn:disabled {

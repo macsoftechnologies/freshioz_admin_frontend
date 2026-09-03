@@ -1,0 +1,130 @@
+.ssw-loader {
+  --ssw-width: 150px;
+  --ssw-logo: 115px;
+
+  width: 100%;
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+  padding: 24px 20px;
+
+  box-sizing: border-box;
+  color: #64748b;
+}
+
+.ssw-loader--sm {
+  --ssw-width: 110px;
+  --ssw-logo: 85px;
+  min-height: 80px;
+  padding: 14px 10px;
+}
+
+.ssw-loader--lg {
+  --ssw-width: 190px;
+  --ssw-logo: 145px;
+  min-height: 160px;
+  padding: 32px 20px;
+}
+
+.ssw-loader__logo {
+  width: var(--ssw-logo);
+  height: auto;
+  object-fit: contain;
+
+  animation:
+    sswLogoPulse
+    1.45s
+    ease-in-out
+    infinite;
+}
+
+.ssw-loader__progress {
+  position: relative;
+
+  width: var(--ssw-width);
+  height: 3.5px;
+
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+/* Progress bar using Freshioz brand colors: deep botanical green, logo orange, citrus, and leaf mint */
+.ssw-loader__progress-bar {
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+  left: -45%;
+
+  width: 45%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #1a4331,
+      #ff9800,
+      #ea580c,
+      #4ade80
+    );
+
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.4);
+
+  animation:
+    sswProgressMove
+    1.05s
+    ease-in-out
+    infinite;
+}
+
+.ssw-loader__text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: 0.01em;
+}
+
+@keyframes sswLogoPulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes sswProgressMove {
+  0% {
+    left: -45%;
+  }
+
+  55% {
+    left: 55%;
+  }
+
+  100% {
+    left: 105%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ssw-loader__logo,
+  .ssw-loader__progress-bar {
+    animation: none;
+  }
+
+  .ssw-loader__progress-bar {
+    left: 0;
+    width: 100%;
+  }
+}

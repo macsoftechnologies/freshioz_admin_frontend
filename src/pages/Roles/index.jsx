@@ -172,9 +172,11 @@ const Roles = () => {
         title="Create Master Role"
       >
         <form onSubmit={handleAddRole} className="add-role-form">
-          <div className="form-group-col">
+          <div className="form-row">
             <Input label="Role Name" name="roleName" required placeholder="e.g. Quality Audit Manager" />
             <Input label="Role Code" name="roleCode" required placeholder="e.g. quality_manager" />
+          </div>
+          <div className="form-group-col mt-3">
             <div className="input-group">
               <label className="input-label">Description</label>
               <textarea name="description" className="textarea-input" placeholder="Role responsibilities..." rows="3"></textarea>
@@ -195,9 +197,11 @@ const Roles = () => {
       >
         {selectedRole && (
           <form onSubmit={handleEditRole} className="add-role-form">
-            <div className="form-group-col">
+            <div className="form-row">
               <Input label="Role Name" name="roleName" required defaultValue={selectedRole.roleName} />
               <Input label="Role Code" name="roleCode" defaultValue={selectedRole.roleCode} readOnly disabled />
+            </div>
+            <div className="form-group-col mt-3">
               <div className="input-group">
                 <label className="input-label">Description</label>
                 <textarea name="description" className="textarea-input" defaultValue={selectedRole.description} rows="3"></textarea>

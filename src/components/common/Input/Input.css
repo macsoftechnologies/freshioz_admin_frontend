@@ -1,50 +1,110 @@
+/* ── Fix Bootstrap .input-group radius interference ────────── */
 .input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  /* margin-bottom: 1rem; */
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Force equal 8px radius on all 4 corners, overriding Bootstrap's left-radius resets */
+.input-group > :not(:first-child):not(.dropdown-menu),
+.input-group > .input-field,
+.input-group > .select-input,
+.input-group > .textarea-input,
+.input-field,
+.select-input,
+.textarea-input,
+.form-control {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-radius: 8px !important;
 }
 
 .input-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Default state: Clean light border (not green) with equal radius */
+.input-field,
+.select-input,
+.textarea-input,
+.form-control {
+  width: 100%;
+  padding: 0.625rem 0.85rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-primary);
+  line-height: 1.4;
+  color: #0f172a;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.input-field {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  outline: none;
-  font-size: 0.875rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background-color: var(--surface);
-  color: var(--text-primary);
+.input-field::placeholder,
+.textarea-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
 }
 
-.input-field:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--ring);
+/* Hover: Subtle border tone */
+.input-field:hover,
+.select-input:hover,
+.textarea-input:hover,
+.form-control:hover {
+  border-color: #cbd5e1 !important;
 }
 
-.input-field:disabled {
-  background-color: var(--background);
+/* Selecting / Focus: Highlight with border: 2px solid #ff9800 !important only on click/focus */
+.input-field:focus,
+.select-input:focus,
+.textarea-input:focus,
+.form-control:focus {
+  border: 2px solid #ff9800 !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3.5px rgba(255, 152, 0, 0.22) !important;
+  outline: none !important;
+}
+
+.input-field:disabled,
+.select-input:disabled,
+.textarea-input:disabled,
+.form-control:disabled {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
   cursor: not-allowed;
+  box-shadow: none !important;
 }
 
 .input-error {
-  border-color: var(--danger);
+  border-color: #ef4444 !important;
+  background-color: #fffafa !important;
 }
 
 .input-error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.18) !important;
 }
 
 .input-error-msg {
   font-size: 0.75rem;
-  color: var(--danger);
+  color: #ef4444;
+  font-weight: 500;
 }
 
 .text-danger {
-  color: var(--danger);
+  color: #ef4444;
+  font-weight: 700;
 }

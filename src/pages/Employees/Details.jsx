@@ -229,29 +229,31 @@ const EmployeeDetails = () => {
         title="Edit Employee"
       >
         <form onSubmit={handleEditEmployee} className="add-employee-form" autoComplete="off">
-          <Input 
-            label="Full Name" 
-            required 
-            placeholder="Enter full name" 
-            value={editForm.employeeName} 
-            onChange={(e) => setEditForm({...editForm, employeeName: e.target.value})} 
-          />
-          <Input 
-            label="Email Address" 
-            type="email" 
-            required 
-            placeholder="Enter email address" 
-            value={editForm.email} 
-            onChange={(e) => setEditForm({...editForm, email: e.target.value})} 
-            autoComplete="new-password"
-          />
-          <Input 
-            label="Phone Number" 
-            placeholder="Enter phone number" 
-            value={editForm.mobileNumber} 
-            onChange={(e) => setEditForm({...editForm, mobileNumber: e.target.value})} 
-          />
           <div className="form-row">
+            <Input 
+              label="Full Name" 
+              required 
+              placeholder="Enter full name" 
+              value={editForm.employeeName} 
+              onChange={(e) => setEditForm({...editForm, employeeName: e.target.value})} 
+            />
+            <Input 
+              label="Email Address" 
+              type="email" 
+              required 
+              placeholder="Enter email address" 
+              value={editForm.email} 
+              onChange={(e) => setEditForm({...editForm, email: e.target.value})} 
+              autoComplete="new-password"
+            />
+          </div>
+          <div className="form-row mt-3">
+            <Input 
+              label="Phone Number" 
+              placeholder="Enter phone number" 
+              value={editForm.mobileNumber} 
+              onChange={(e) => setEditForm({...editForm, mobileNumber: e.target.value})} 
+            />
             <Input 
               label="Designation" 
               required 
@@ -259,7 +261,9 @@ const EmployeeDetails = () => {
               value={editForm.designation} 
               onChange={(e) => setEditForm({...editForm, designation: e.target.value})} 
             />
-            <div className="input-group">
+          </div>
+          <div className="form-row mt-3">
+            <div className="input-group" style={{ width: '100%' }}>
               <label className="input-label">System Role</label>
               <select 
                 required 

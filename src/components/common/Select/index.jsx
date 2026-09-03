@@ -1,7 +1,9 @@
 import React from 'react';
 import '../Input/Input.css';
 
-const Select = ({ label, options = [], error, required, ...props }) => {
+const Select = ({ label, options = [], error, required, placeholder = "Select an option", ...props }) => {
+  const hasEmptyOption = options.some(opt => opt.value === '');
+
   return (
     <div className="input-group">
       {label && <label className="input-label">{label} {required && <span className="text-danger">*</span>}</label>}
@@ -9,7 +11,7 @@ const Select = ({ label, options = [], error, required, ...props }) => {
         className={`input-field ${error ? 'input-error' : ''}`} 
         {...props}
       >
-        <option value="" disabled>Select an option</option>
+        {!hasEmptyOption && <option value="" disabled>{placeholder}</option>}
         {options.map((opt, i) => (
           <option key={i} value={opt.value}>{opt.label}</option>
         ))}

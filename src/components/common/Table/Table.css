@@ -2,8 +2,9 @@
   width: 100%;
   overflow-x: auto;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
+  border: 1px solid #e2e8f0;
   background-color: var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .table {
@@ -13,16 +14,21 @@
 }
 
 .table th, .table td {
-  padding: 0.875rem 1rem;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border);
+  padding: 0.95rem 1.15rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #edf2f7;
+  vertical-align: middle;
 }
 
 .table th {
-  background-color: var(--primary);
-  font-weight: 600;
-  color: white;
-  border-bottom: none;
+  background: #f8fafc;
+  font-weight: 700;
+  color: #1e293b;
+  border-bottom: 2px solid #e2e8f0;
+  border-top: 3px solid #ff9800;
+  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  text-transform: uppercase;
 }
 
 .table tr:last-child td {
@@ -31,14 +37,240 @@
 
 .table-empty {
   text-align: center;
-  padding: 2rem !important;
+  padding: 2.5rem !important;
   color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.table-loading-cell {
+  text-align: center;
+  padding: 2rem 1rem !important;
+  background-color: #ffffff;
 }
 
 .table tr.clickable-row {
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .table tr.clickable-row:hover {
-  background-color: var(--background);
+  background-color: #f8fafc;
+}
+
+/* ── Table Action Buttons ────────────────────────────────── */
+.table td .flex {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Generic action button styling inside table */
+.table td .btn-ghost {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.table td .btn-ghost:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Edit action button: Soft emerald turning solid on hover */
+.table td .btn-ghost[title="Edit"],
+.table td .btn-ghost:has(svg[data-lucide="edit"]),
+.table td .btn-ghost:first-child:not(.text-danger):not(.text-success) {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.table td .btn-ghost[title="Edit"]:hover,
+.table td .btn-ghost:has(svg[data-lucide="edit"]):hover,
+.table td .btn-ghost:first-child:not(.text-danger):not(.text-success):hover {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+/* Delete action button: Soft crimson turning solid on hover */
+.table td .btn-ghost.text-danger,
+.table td .btn-ghost[title="Delete"] {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626 !important;
+}
+
+.table td .btn-ghost.text-danger:hover,
+.table td .btn-ghost[title="Delete"]:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* Power / Toggle Status button */
+.table td .btn-ghost[title="Deactivate"] {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #d97706;
+}
+
+.table td .btn-ghost[title="Deactivate"]:hover {
+  background-color: #d97706;
+  border-color: #d97706;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.table td .btn-ghost[title="Activate"] {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #059669;
+}
+
+.table td .btn-ghost[title="Activate"]:hover {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+/* ── Table Pagination ────────────────────────────────────── */
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.95rem 1.35rem;
+  background: linear-gradient(180deg, #ffffff 0%, #faf9f6 100%);
+  border-top: 1.5px solid #edf2f7;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.table-pagination-info {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.table-pagination-info strong {
+  color: #1a4331;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  background-color: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 6px;
+  margin: 0 0.15rem;
+}
+
+.table-pagination-size {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.table-page-size-select {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a4331;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.table-page-size-select:hover {
+  border-color: #ff9800;
+  background-color: #fffaf0;
+}
+
+.table-page-size-select:focus {
+  border: 2px solid #ff9800 !important;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2) !important;
+}
+
+.table-pagination-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.table-page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.55rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.table-page-btn:hover:not(:disabled) {
+  border-color: #ff9800;
+  color: #ea580c;
+  background-color: #fff7ed;
+  transform: translateY(-1px);
+}
+
+.table-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: #f1f5f9;
+}
+
+/* Freshioz Logo Orange gradient for active page button */
+.table-page-btn--active {
+  background: linear-gradient(135deg, #ff9800 0%, #ea580c 100%) !important;
+  border-color: #ff9800 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.table-page-arrow {
+  font-size: 1rem;
+  color: #475569;
+}
+
+.table-page-ellipsis {
+  padding: 0 0.35rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
 }

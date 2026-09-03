@@ -1,36 +1,103 @@
 .employees-page {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+.employees-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.employees-page .page-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a4331;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* Orange primary button matching Freshioz logo and modal header */
+.employees-page .page-header .btn {
+  background: linear-gradient(135deg, #ff9800 0%, #ea580c 100%);
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.28);
+  border: none;
+  padding: 0.6rem 1.15rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.employees-page .page-header .btn:hover {
+  background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
+  transform: translateY(-1px);
 }
 
 .filters-bar {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background-color: var(--surface);
-  padding: 1rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  margin-bottom: 0.5rem;
+  gap: 0.85rem;
+  background-color: #ffffff;
+  padding: 0.85rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 @media (min-width: 768px) {
   .filters-bar {
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
   }
 
   .search-wrap {
     flex: 1;
-    max-width: 350px;
+    max-width: 320px;
   }
 
   .filter-wrap {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.65rem;
   }
+}
+
+/* Refined filter buttons */
+.filter-wrap .btn-primary {
+  background-color: #1a4331;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  padding: 0.6rem 1.1rem;
+  box-shadow: 0 2px 6px rgba(26, 67, 49, 0.2);
+  transition: all 0.2s ease;
+}
+
+.filter-wrap .btn-primary:hover {
+  background-color: #123325;
+  box-shadow: 0 4px 10px rgba(26, 67, 49, 0.3);
+}
+
+.filter-wrap .btn-light-danger {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.filter-wrap .btn-light-danger:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+  border-color: #94a3b8;
 }
 
 .add-employee-form {
@@ -53,22 +120,30 @@
 
 .select-input {
   width: 100%;
-  padding: 0.65rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background-color: var(--surface);
-  font-size: 0.9rem;
-  color: var(--text-primary);
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
   outline: none;
   transition: all 0.2s ease;
 }
 
+.select-input:focus {
+  border: 2px solid #ff9800 !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3.5px rgba(255, 152, 0, 0.22) !important;
+  outline: none !important;
+}
+
 .input-label {
   display: block;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.35rem;
 }
 
 .form-actions {
