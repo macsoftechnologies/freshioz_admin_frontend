@@ -31,9 +31,29 @@ export const addOnboarding = async (payload) => {
 
 export const updateOnboarding = async (id, payload) => {
   const isFormData = payload instanceof FormData;
-  const response = await api.put(`/onboarding/${id}`, payload, isFormData ? {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  } : {});
+  const config = isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+  try {
+    // Official API Reference (Page 14): [PUT] /onboarding/:id (Full Update)
+    const response = await api.put(`/onboarding/${id}`, payload, config);
+    return response.data;
+  } catch (putErr) {
+    // If PUT returns 405 Method Not Allowed or 404, fall back to PATCH (Page 10/Postman Item 6)
+    if (putErr?.response?.status === 405 || putErr?.response?.status === 404) {
+      const response = await api.patch(`/onboarding/${id}`, payload, config);
+      return response.data;
+    }
+    throw putErr;
+  }
+};
+
+// Official API Reference (Page 15): [DELETE] /onboarding/:id/image
+// Param: id, Body/Query: imageUrl (string)
+export const removeOnboardingImage = async (id, imageUrl) => {
+  const response = await api.delete(`/onboarding/${id}/image`, {
+    data: { imageUrl },
+    params: { imageUrl },
+    headers: { 'Content-Type': 'application/json' }
+  });
   return response.data;
 };
 

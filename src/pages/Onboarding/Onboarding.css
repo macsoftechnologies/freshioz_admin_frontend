@@ -126,3 +126,21 @@
     flex: 1;
   }
 }
+
+/* ── Full Address Textarea & Mobile Responsiveness ────────── */
+.full-address-textarea {
+  min-height: 85px;
+  line-height: 1.5;
+  font-size: 0.9rem;
+  resize: vertical;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .full-address-textarea {
+    min-height: 110px;
+    font-size: 0.92rem;
+    padding: 0.75rem 0.85rem;
+    line-height: 1.55;
+  }
+}

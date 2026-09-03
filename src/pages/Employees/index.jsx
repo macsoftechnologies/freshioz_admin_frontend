@@ -10,6 +10,7 @@ import { useToast } from '../../context/ToastContext';
 import { Plus, Edit, Power, Trash2, Filter } from 'lucide-react';
 import { getEmployees, registerEmployee, toggleEmployeeStatus, updateEmployee, deleteEmployee } from '../../services/employeeService';
 import { getRoles } from '../../services/roleService';
+import { extractList } from '../../utils/dataHelper';
 import './Employees.css';
 
 const Employees = () => {
@@ -48,8 +49,7 @@ const Employees = () => {
         search: overrides.search !== undefined ? overrides.search : search, 
         role: overrides.role !== undefined ? overrides.role : roleFilter 
       });
-      // The API response might be an array or wrapped in an object. Assuming array based on doc:
-      setEmployees(Array.isArray(data) ? data : (data.users || []));
+      setEmployees(extractList(data));
     } catch (err) {
       addToast('Failed to load employees', 'error');
       // For fallback during dev if API fails
@@ -62,7 +62,7 @@ const Employees = () => {
   const fetchRoles = async () => {
     try {
       const data = await getRoles();
-      setRoles(Array.isArray(data) ? data : []);
+      setRoles(extractList(data));
     } catch (err) {
       addToast('Failed to load roles', 'error');
     }

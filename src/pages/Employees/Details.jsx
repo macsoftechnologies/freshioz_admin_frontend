@@ -10,6 +10,7 @@ import { User, ArrowLeft, Filter, Edit, Trash2 } from 'lucide-react';
 import { toggleEmployeeStatus, updateEmployee, deleteEmployee } from '../../services/employeeService';
 import { getRoles } from '../../services/roleService';
 import { getEmployeeOnboardings } from '../../services/onboardingService';
+import { extractList } from '../../utils/dataHelper';
 import './Details.css';
 
 const EmployeeDetails = () => {
@@ -19,14 +20,17 @@ const EmployeeDetails = () => {
   const { addToast } = useToast();
   
   const [employee, setEmployee] = useState(location.state?.employee || null);
+  const [roles, setRoles] = useState([]);
   const [onboardings, setOnboardings] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  
+  // Filters for sub-table
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [roles, setRoles] = useState([]);
 
   // Modals
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   
   // Edit form
@@ -51,7 +55,7 @@ const EmployeeDetails = () => {
     const fetchRoles = async () => {
       try {
         const data = await getRoles();
-        setRoles(Array.isArray(data) ? data : []);
+        setRoles(extractList(data));
       } catch (err) {
         // silently fail
       }
@@ -67,7 +71,7 @@ const EmployeeDetails = () => {
         startDate: overrides.startDate !== undefined ? overrides.startDate : startDate, 
         endDate: overrides.endDate !== undefined ? overrides.endDate : endDate 
       });
-      setOnboardings(Array.isArray(data) ? data : []);
+      setOnboardings(extractList(data));
     } catch (err) {
       addToast('Failed to load onboarding records', 'error');
     } finally {

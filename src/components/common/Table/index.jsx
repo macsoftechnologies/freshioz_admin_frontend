@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Loader from '../Loader';
+import { extractList } from '../../../utils/dataHelper';
 import './Table.css';
 
 function getPageNumbers(current, total) {
@@ -15,26 +16,27 @@ function getPageNumbers(current, total) {
   return [1, '...', current - 1, current, current + 1, '...', total];
 }
 
-const Table = ({ 
-  columns, 
-  data = [], 
-  emptyState = "No data available", 
-  onRowClick, 
+const Table = ({
+  columns,
+  data = [],
+  emptyState = "No data available",
+  onRowClick,
   loading = false,
   pagination = true,
   defaultPageSize = 10,
   pageSizeOptions = [5, 10, 20, 50],
   itemLabel = "entries"
 }) => {
+  const tableData = extractList(data);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
   const isLoading = Boolean(loading) || (typeof emptyState === 'string' && emptyState.toLowerCase().includes('load'));
-  const loadingText = typeof loading === 'string' 
-    ? loading 
+  const loadingText = typeof loading === 'string'
+    ? loading
     : (typeof emptyState === 'string' && emptyState.toLowerCase().includes('load') ? emptyState : "Loading data...");
 
-  const totalEntries = data.length;
+  const totalEntries = tableData.length;
   const totalPages = Math.ceil(totalEntries / pageSize) || 1;
   const validCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
 
@@ -47,7 +49,7 @@ const Table = ({
 
   const startIndex = (validCurrentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalEntries);
-  const displayData = pagination ? data.slice(startIndex, endIndex) : data;
+  const displayData = pagination ? tableData.slice(startIndex, endIndex) : tableData;
 
   return (
     <div className="table-container">
@@ -66,7 +68,7 @@ const Table = ({
                 <Loader text={loadingText} size="md" />
               </td>
             </tr>
-          ) : data.length === 0 ? (
+          ) : tableData.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="table-empty">
                 {emptyState}
@@ -74,8 +76,8 @@ const Table = ({
             </tr>
           ) : (
             displayData.map((row, i) => (
-              <tr 
-                key={i} 
+              <tr
+                key={i}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
                 className={onRowClick ? "clickable-row" : ""}
                 style={onRowClick ? { cursor: 'pointer' } : {}}
@@ -100,8 +102,8 @@ const Table = ({
             </span>
             <div className="table-pagination-size">
               <span>Per page:</span>
-              <select 
-                value={pageSize} 
+              <select
+                value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
@@ -116,7 +118,7 @@ const Table = ({
           </div>
 
           <div className="table-pagination-right">
-            <button 
+            <button
               type="button"
               className="table-page-btn table-page-arrow"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -126,7 +128,7 @@ const Table = ({
               ←
             </button>
 
-            {getPageNumbers(validCurrentPage, totalPages).map((p, idx) => 
+            {getPageNumbers(validCurrentPage, totalPages).map((p, idx) =>
               p === '...' ? (
                 <span key={idx} className="table-page-ellipsis">...</span>
               ) : (
@@ -141,7 +143,7 @@ const Table = ({
               )
             )}
 
-            <button 
+            <button
               type="button"
               className="table-page-btn table-page-arrow"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}

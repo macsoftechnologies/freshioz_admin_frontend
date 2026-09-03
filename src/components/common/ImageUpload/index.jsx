@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Upload, X } from 'lucide-react';
 import './ImageUpload.css';
 
-const ImageUpload = ({ photos = [], onPhotosChange, maxPhotos = 5 }) => {
+const ImageUpload = ({ photos = [], onPhotosChange, maxPhotos = 10, onRemovePhoto }) => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -95,7 +95,12 @@ const ImageUpload = ({ photos = [], onPhotosChange, maxPhotos = 5 }) => {
     e.target.value = '';
   };
 
-  const removePhoto = (idx) => {
+  const removePhoto = async (idx) => {
+    const photoToRemove = photos[idx];
+    if (onRemovePhoto) {
+      const allowed = await onRemovePhoto(photoToRemove, idx);
+      if (allowed === false) return;
+    }
     const updated = photos.filter((_, i) => i !== idx);
     onPhotosChange(updated);
   };
@@ -162,7 +167,12 @@ const ImageUpload = ({ photos = [], onPhotosChange, maxPhotos = 5 }) => {
             <button
               type="button"
               className="image-thumbnail-remove"
-              onClick={() => removePhoto(idx)}
+              title="Remove image"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                removePhoto(idx);
+              }}
             >
               <X size={12} />
             </button>

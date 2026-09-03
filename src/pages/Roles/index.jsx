@@ -7,6 +7,7 @@ import Modal from '../../components/common/Modal';
 import { useToast } from '../../context/ToastContext';
 import { Plus, Edit, Power } from 'lucide-react';
 import { getRoles } from '../../services/roleService';
+import { extractList } from '../../utils/dataHelper';
 import api from '../../services/api';
 import './Roles.css';
 
@@ -26,7 +27,7 @@ const Roles = () => {
     setLoading(true);
     try {
       const data = await getRoles();
-      setRoles(Array.isArray(data) ? data : []);
+      setRoles(extractList(data));
     } catch (err) {
       addToast('Failed to load roles', 'error');
       if(roles.length === 0) setRoles([]);

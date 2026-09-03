@@ -8,9 +8,11 @@ import Modal from '../../components/common/Modal';
 import ImageUpload from '../../components/common/ImageUpload';
 import { useToast } from '../../context/ToastContext';
 import { Plus, Edit, CheckCircle, XCircle, Filter, Trash2, MapPin } from 'lucide-react';
-import { getOnboardings, addOnboarding, updateOnboarding, updateOnboardingStatus, deleteOnboarding } from '../../services/onboardingService';
+import Swal from 'sweetalert2';
+import { getOnboardings, addOnboarding, updateOnboarding, updateOnboardingStatus, deleteOnboarding, removeOnboardingImage } from '../../services/onboardingService';
 import { getUser } from '../../services/authService';
 import { API_BASE_URL } from '../../services/api';
+import { extractList } from '../../utils/dataHelper';
 import './Onboarding.css';
 
 const Onboarding = () => {
@@ -58,7 +60,7 @@ const Onboarding = () => {
         status: overrides.status !== undefined ? overrides.status : statusFilter, 
         type: overrides.type !== undefined ? overrides.type : typeFilter 
       });
-      setOnboardings(Array.isArray(data) ? data : []);
+      setOnboardings(extractList(data));
     } catch (err) {
       addToast('Failed to load onboarding requests', 'error');
       if(onboardings.length === 0) setOnboardings([]);
@@ -187,15 +189,90 @@ const Onboarding = () => {
     setAddModalOpen(true);
   };
 
+  const cleanImageUrl = (rawUrl) => {
+    if (!rawUrl) return '';
+    try {
+      if (rawUrl.startsWith('http')) {
+        const parsed = new URL(rawUrl);
+        return parsed.pathname;
+      }
+    } catch (e) {}
+    return rawUrl;
+  };
+
+  const handleRemovePhoto = async (photoToRemove) => {
+    // If it's only a local newly selected file, allow removal immediately
+    if (!photoToRemove?.existingUrl) {
+      return true;
+    }
+
+    const confirmResult = await Swal.fire({
+      title: 'Remove Image?',
+      text: 'Do you want to permanently delete this image from the community onboarding record?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ff9800',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, remove it',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (!confirmResult.isConfirmed) {
+      return false;
+    }
+
+    try {
+      const onbId = selectedOnboarding?.onboardingId || selectedOnboarding?._id || selectedOnboarding?.id;
+      if (!onbId) {
+        addToast('No onboarding ID found for image deletion', 'error');
+        return true;
+      }
+
+      const targetUrl = cleanImageUrl(photoToRemove.existingUrl);
+      const res = await removeOnboardingImage(onbId, targetUrl);
+      addToast(res?.message || 'Image removed successfully', 'success');
+
+      if (res?.remainingImages) {
+        setSelectedOnboarding(prev => ({
+          ...prev,
+          images: res.remainingImages
+        }));
+      }
+
+      fetchOnboardings();
+      return true;
+    } catch (error) {
+      const errMsg = error?.response?.data?.message || error?.message || 'Failed to remove image from server.';
+      
+      // If server failed (e.g. broken image not found on disk), ask if user wants to remove from form anyway
+      const fallbackResult = await Swal.fire({
+        icon: 'warning',
+        title: 'Server Notice',
+        text: `${errMsg} Do you want to remove this image from the form anyway?`,
+        showCancelButton: true,
+        confirmButtonColor: '#ff9800',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Yes, remove from form',
+        cancelButtonText: 'Keep it'
+      });
+
+      if (fallbackResult.isConfirmed) {
+        addToast('Image removed from form', 'info');
+        return true;
+      }
+      return false;
+    }
+  };
+
   const buildFormData = (fields) => {
     const formData = new FormData();
-    formData.append('communityName', fields.communityName);
-    formData.append('type', fields.type);
-    formData.append('fullAddress', fields.fullAddress);
-    formData.append('contactPersonName', fields.contactPersonName);
-    formData.append('contactPhone', fields.contactPhone);
-    formData.append('latitude', Number(fields.latitude || gpsLat || 0));
-    formData.append('longitude', Number(fields.longitude || gpsLng || 0));
+    if (fields.communityName) formData.append('communityName', fields.communityName);
+    if (fields.type) formData.append('type', fields.type);
+    if (fields.fullAddress) formData.append('fullAddress', fields.fullAddress);
+    if (fields.contactPersonName) formData.append('contactPersonName', fields.contactPersonName);
+    if (fields.contactPhone) formData.append('contactPhone', fields.contactPhone);
+    if (fields.latitude) formData.append('latitude', Number(fields.latitude));
+    if (fields.longitude) formData.append('longitude', Number(fields.longitude));
     if (fields.flatsCount) formData.append('flatsCount', Number(fields.flatsCount));
     if (fields.residentsCount) formData.append('residentsCount', Number(fields.residentsCount));
     
@@ -213,15 +290,15 @@ const Onboarding = () => {
     e.preventDefault();
     const form = new FormData(e.target);
     const fields = {
-      communityName: form.get('communityName'),
-      type: form.get('type'),
-      fullAddress: form.get('fullAddress') || fullAddress,
-      contactPersonName: form.get('contactPersonName'),
-      contactPhone: form.get('contactPhone'),
-      latitude: gpsLat || form.get('latitude'),
-      longitude: gpsLng || form.get('longitude'),
-      flatsCount: form.get('flatsCount'),
-      residentsCount: form.get('residentsCount'),
+      communityName: form.get('communityName') || editForm.communityName || '',
+      type: form.get('type') || onboardingType,
+      fullAddress: form.get('fullAddress') || fullAddress || editForm.fullAddress || '',
+      contactPersonName: form.get('contactPersonName') || editForm.contactPersonName || '',
+      contactPhone: form.get('contactPhone') || editForm.contactPhone || '',
+      latitude: form.get('latitude') || gpsLat || editForm.latitude || 0,
+      longitude: form.get('longitude') || gpsLng || editForm.longitude || 0,
+      flatsCount: form.get('flatsCount') || editForm.flatsCount || '',
+      residentsCount: form.get('residentsCount') || editForm.residentsCount || '',
     };
 
     // Always send as FormData (API expects form-data)
@@ -229,7 +306,7 @@ const Onboarding = () => {
 
     try {
       if (isEditMode && selectedOnboarding) {
-        const onbId = selectedOnboarding.onboardingId || selectedOnboarding.id || selectedOnboarding._id;
+        const onbId = selectedOnboarding.onboardingId || selectedOnboarding._id || selectedOnboarding.id;
         await updateOnboarding(onbId, payload);
         addToast('Onboarding updated successfully', 'success');
       } else {
@@ -241,7 +318,8 @@ const Onboarding = () => {
       setPhotos([]);
       fetchOnboardings();
     } catch (error) {
-      addToast(isEditMode ? 'Failed to update onboarding' : 'Failed to create onboarding request', 'error');
+      const errMsg = error?.response?.data?.message || (isEditMode ? 'Failed to update onboarding' : 'Failed to create onboarding request');
+      addToast(errMsg, 'error');
     }
   };
 
@@ -553,7 +631,7 @@ const Onboarding = () => {
         onClose={() => { setAddModalOpen(false); setIsEditMode(false); setPhotos([]); }}
         title={isEditMode ? "Edit Community Onboarding" : "Add Community Onboarding"}
       >
-        <form onSubmit={handleAddOnboarding} className="add-onboarding-form">
+        <form key={isEditMode ? (selectedOnboarding?._id || selectedOnboarding?.id || 'edit') : 'new'} onSubmit={handleAddOnboarding} className="add-onboarding-form">
           <div className="form-row">
             <Input 
               label="Community Name" 
@@ -575,30 +653,9 @@ const Onboarding = () => {
           <ImageUpload 
             photos={photos} 
             onPhotosChange={setPhotos} 
-            maxPhotos={5} 
+            onRemovePhoto={isEditMode ? handleRemovePhoto : undefined}
+            maxPhotos={10} 
           />
-          
-          <div className="form-group-col mt-3">
-             <div className="input-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <label className="input-label" style={{ margin: 0 }}>Full Address</label>
-                  {addressLoading && (
-                    <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 500 }}>
-                      Auto-filling address from GPS...
-                    </span>
-                  )}
-                </div>
-                <textarea 
-                  name="fullAddress" 
-                  required 
-                  className="textarea-input" 
-                  placeholder="Street address..." 
-                  rows="2"
-                  value={fullAddress}
-                  onChange={(e) => setFullAddress(e.target.value)}
-                ></textarea>
-             </div>
-          </div>
           
           <div className="form-row mt-3">
             <Input 
@@ -635,7 +692,30 @@ const Onboarding = () => {
               defaultValue={isEditMode ? editForm.residentsCount : ''} 
             />
           </div>
-          
+
+          {/* Full Address Section placed directly above Location on Map */}
+          <div className="form-group-col mt-3">
+             <div className="input-group">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <label className="input-label" style={{ margin: 0 }}>Full Address</label>
+                  {addressLoading && (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 500 }}>
+                      Auto-filling address from GPS...
+                    </span>
+                  )}
+                </div>
+                <textarea 
+                  name="fullAddress" 
+                  required 
+                  className="textarea-input full-address-textarea" 
+                  placeholder="Street address..." 
+                  rows="3"
+                  value={fullAddress}
+                  onChange={(e) => setFullAddress(e.target.value)}
+                ></textarea>
+             </div>
+          </div>
+
           {/* Hidden inputs to pass latitude & longitude to backend without showing in frontend */}
           <input type="hidden" name="latitude" value={gpsLat} />
           <input type="hidden" name="longitude" value={gpsLng} />

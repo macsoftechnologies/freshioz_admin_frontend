@@ -11,7 +11,7 @@ const Toast = ({ id, message, type = 'info', onClose }) => {
   };
 
   return (
-    <div className={`toast toast-${type}`}>
+    <div className={`toast show custom-toast custom-toast-${type} toast-${type}`}>
       {icons[type]}
       <div className="toast-content">{message}</div>
       <button className="toast-close" onClick={() => onClose(id)}>

@@ -282,8 +282,14 @@ textarea:focus,
 @media (max-width: 640px) {
   .page-header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .page-header .btn,
+  .page-header .btn-primary {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -291,4 +297,14 @@ textarea:focus,
   .lg\:hidden {
     display: none;
   }
+}
+
+/* ── SweetAlert2 z-index Fix (Ensures alerts render on top of modals) ── */
+.swal2-container {
+  z-index: 10000099 !important;
+}
+
+.swal2-popup {
+  font-family: inherit !important;
+  border-radius: 14px !important;
 }
