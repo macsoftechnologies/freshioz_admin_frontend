@@ -27,3 +27,13 @@ export const toggleEmployeeStatus = async (employeeId, status) => {
   });
   return response.data;
 };
+
+export const updateEmployee = async (employeeId, payload) => {
+  const response = await api.put(`/users/${employeeId}`, payload);
+  return response.data;
+};
+
+export const deleteEmployee = async (employeeId) => {
+  const response = await api.delete(`/users/${employeeId}`);
+  return response.data;
+};

@@ -26,6 +26,13 @@
   gap: 1.5rem;
 }
 
+.profile-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .profile-avatar-large {
   width: 80px;
   height: 80px;
@@ -129,4 +136,66 @@
 .date-input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+@media (max-width: 768px) {
+  .profile-header-large {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .profile-header-left {
+    width: 100%;
+  }
+
+  .profile-actions-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .profile-grid-large {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .date-filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .date-input-wrap {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .card {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-grid-large {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .date-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .date-input-wrap {
+    grid-column: span 2;
+  }
+  
+  .date-filters button {
+    width: 100%;
+  }
 }

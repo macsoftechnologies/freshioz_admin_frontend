@@ -7,8 +7,8 @@ import Select from '../../components/common/Select';
 import StatusBadge from '../../components/common/StatusBadge';
 import Modal from '../../components/common/Modal';
 import { useToast } from '../../context/ToastContext';
-import { Plus, Edit, Power, User, Filter } from 'lucide-react';
-import { getEmployees, registerEmployee, toggleEmployeeStatus } from '../../services/employeeService';
+import { Plus, Edit, Power, Trash2, Filter } from 'lucide-react';
+import { getEmployees, registerEmployee, toggleEmployeeStatus, updateEmployee, deleteEmployee } from '../../services/employeeService';
 import { getRoles } from '../../services/roleService';
 import './Employees.css';
 
@@ -21,10 +21,21 @@ const Employees = () => {
   
   // Modals
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   
   // Selections
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  
+  // Edit form state
+  const [editForm, setEditForm] = useState({
+    employeeName: '',
+    email: '',
+    mobileNumber: '',
+    designation: '',
+    roleId: '',
+  });
   
   // Filters
   const [search, setSearch] = useState('');
@@ -112,6 +123,52 @@ const Employees = () => {
     }
   };
 
+  const openEditModal = (e, employee) => {
+    e.stopPropagation();
+    setSelectedEmployee(employee);
+    setEditForm({
+      employeeName: employee.employeeName || '',
+      email: employee.email || '',
+      mobileNumber: employee.mobileNumber || '',
+      designation: employee.designation || '',
+      roleId: employee.roleId || '',
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditEmployee = async (e) => {
+    e.preventDefault();
+    if (!selectedEmployee) return;
+    const empId = selectedEmployee.employeeId || selectedEmployee.userId || selectedEmployee.id;
+    try {
+      await updateEmployee(empId, editForm);
+      setEditModalOpen(false);
+      addToast('Employee updated successfully', 'success');
+      fetchEmployees();
+    } catch (error) {
+      addToast('Failed to update employee', 'error');
+    }
+  };
+
+  const confirmDelete = (e, employee) => {
+    e.stopPropagation();
+    setSelectedEmployee(employee);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteEmployee = async () => {
+    if (!selectedEmployee) return;
+    const empId = selectedEmployee.employeeId || selectedEmployee.userId || selectedEmployee.id;
+    try {
+      await deleteEmployee(empId);
+      setDeleteModalOpen(false);
+      addToast('Employee deleted successfully', 'success');
+      fetchEmployees();
+    } catch (error) {
+      addToast('Failed to delete employee', 'error');
+    }
+  };
+
   const handleRowClick = (employee) => {
     navigate(`/employees/${employee.employeeId || employee.userId || employee.id}`, { state: { employee } });
   };
@@ -128,7 +185,7 @@ const Employees = () => {
       accessor: 'actions',
       render: (row) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); addToast('Edit feature coming soon', 'info'); }}><Edit size={16} /></Button>
+          <Button variant="ghost" size="sm" onClick={(e) => openEditModal(e, row)} title="Edit"><Edit size={16} /></Button>
           <Button 
             variant="ghost" 
             size="sm" 
@@ -138,6 +195,7 @@ const Employees = () => {
           >
             <Power size={16} />
           </Button>
+          <Button variant="ghost" size="sm" className="text-danger" onClick={(e) => confirmDelete(e, row)} title="Delete"><Trash2 size={16} /></Button>
         </div>
       )
     }
@@ -206,18 +264,35 @@ const Employees = () => {
         {selectedEmployee?.status === 'active' && <p className="status-warning">They will lose access to the system until reactivated.</p>}
       </Modal>
 
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Delete Employee"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={handleDeleteEmployee}>Delete</Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to permanently delete <strong>{selectedEmployee?.employeeName}</strong>?</p>
+        <p className="status-warning">This action cannot be undone.</p>
+      </Modal>
+
       {/* Add Employee Modal */}
       <Modal
         isOpen={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         title="Add New Employee"
       >
-        <form onSubmit={handleAddEmployee} className="add-employee-form">
+        <form onSubmit={handleAddEmployee} className="add-employee-form" autoComplete="off">
           <div className="form-row">
             <Input label="First Name" name="firstName" required placeholder="Enter first name" />
             <Input label="Last Name" name="lastName" required placeholder="Enter last name" />
           </div>
-          <Input label="Email Address" name="email" type="email" required placeholder="Enter email address" />
+          <Input label="Email Address" name="email" type="email" required placeholder="Enter email address" autoComplete="new-password" />
           <Input label="Phone Number" name="phone" placeholder="Enter phone number" />
           <div className="form-row">
             <Input label="Designation" name="designation" required placeholder="e.g. Sales Executive" />
@@ -232,11 +307,70 @@ const Employees = () => {
             </div>
           </div>
           <div className="form-row">
-            <Input label="Password" name="password" type="password" placeholder="Default: Freshioz@123" />
+            <Input label="Password" name="password" type="password" placeholder="Default: Freshioz@123" autoComplete="new-password" />
           </div>
           <div className="form-actions mt-4">
             <Button type="button" variant="ghost" onClick={() => setAddModalOpen(false)}>Cancel</Button>
             <Button type="submit" variant="primary">Register Employee</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Employee Modal */}
+      <Modal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title="Edit Employee"
+      >
+        <form onSubmit={handleEditEmployee} className="add-employee-form" autoComplete="off">
+          <Input 
+            label="Full Name" 
+            required 
+            placeholder="Enter full name" 
+            value={editForm.employeeName} 
+            onChange={(e) => setEditForm({...editForm, employeeName: e.target.value})} 
+          />
+          <Input 
+            label="Email Address" 
+            type="email" 
+            required 
+            placeholder="Enter email address" 
+            value={editForm.email} 
+            onChange={(e) => setEditForm({...editForm, email: e.target.value})} 
+            autoComplete="new-password"
+          />
+          <Input 
+            label="Phone Number" 
+            placeholder="Enter phone number" 
+            value={editForm.mobileNumber} 
+            onChange={(e) => setEditForm({...editForm, mobileNumber: e.target.value})} 
+          />
+          <div className="form-row">
+            <Input 
+              label="Designation" 
+              required 
+              placeholder="e.g. Sales Executive" 
+              value={editForm.designation} 
+              onChange={(e) => setEditForm({...editForm, designation: e.target.value})} 
+            />
+            <div className="input-group">
+              <label className="input-label">System Role</label>
+              <select 
+                required 
+                className="select-input" 
+                value={editForm.roleId} 
+                onChange={(e) => setEditForm({...editForm, roleId: e.target.value})}
+              >
+                <option value="">Select Role</option>
+                {roles.map(r => (
+                  <option key={r.roleId} value={r.roleId}>{r.roleName}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="form-actions mt-4">
+            <Button type="button" variant="ghost" onClick={() => setEditModalOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="primary">Update Employee</Button>
           </div>
         </form>
       </Modal>

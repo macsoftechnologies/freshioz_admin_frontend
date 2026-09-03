@@ -114,7 +114,6 @@ const Roles = () => {
       accessor: 'actions',
       render: (row) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={(e) => openEditModal(e, row)}><Edit size={16} /></Button>
           <Button 
             variant="ghost" 
             size="sm" 

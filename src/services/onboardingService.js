@@ -22,12 +22,23 @@ export const getOnboardingDetails = async (id) => {
 };
 
 export const addOnboarding = async (payload) => {
-  const response = await api.post('/onboarding', payload);
+  const isFormData = payload instanceof FormData;
+  const response = await api.post('/onboarding', payload, isFormData ? {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  } : {});
   return response.data;
 };
 
 export const updateOnboarding = async (id, payload) => {
-  const response = await api.put(`/onboarding/${id}`, payload);
+  const isFormData = payload instanceof FormData;
+  const response = await api.put(`/onboarding/${id}`, payload, isFormData ? {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  } : {});
+  return response.data;
+};
+
+export const deleteOnboarding = async (id) => {
+  const response = await api.delete(`/onboarding/${id}`);
   return response.data;
 };
 

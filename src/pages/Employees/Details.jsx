@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Button from '../../components/common/Button';
+import Input from '../../components/common/Input';
 import StatusBadge from '../../components/common/StatusBadge';
 import Table from '../../components/common/Table';
+import Modal from '../../components/common/Modal';
 import { useToast } from '../../context/ToastContext';
-import { User, ArrowLeft, Filter } from 'lucide-react';
-import { toggleEmployeeStatus } from '../../services/employeeService';
+import { User, ArrowLeft, Filter, Edit, Trash2 } from 'lucide-react';
+import { toggleEmployeeStatus, updateEmployee, deleteEmployee } from '../../services/employeeService';
+import { getRoles } from '../../services/roleService';
 import { getEmployeeOnboardings } from '../../services/onboardingService';
 import './Details.css';
 
@@ -20,6 +23,20 @@ const EmployeeDetails = () => {
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [roles, setRoles] = useState([]);
+
+  // Modals
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  
+  // Edit form
+  const [editForm, setEditForm] = useState({
+    employeeName: '',
+    email: '',
+    mobileNumber: '',
+    designation: '',
+    roleId: '',
+  });
 
   // If there's no state (e.g. user refreshed the page), we should ideally fetch the single employee by ID.
   // For now we'll handle the case where it exists.
@@ -29,6 +46,18 @@ const EmployeeDetails = () => {
       navigate('/employees');
     }
   }, [employee, navigate, addToast]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const data = await getRoles();
+        setRoles(Array.isArray(data) ? data : []);
+      } catch (err) {
+        // silently fail
+      }
+    };
+    fetchRoles();
+  }, []);
 
   const fetchOnboardings = async (overrides = {}) => {
     if (!employee) return;
@@ -67,6 +96,40 @@ const EmployeeDetails = () => {
     }
   };
 
+  const openEditModal = () => {
+    setEditForm({
+      employeeName: employee.employeeName || '',
+      email: employee.email || '',
+      mobileNumber: employee.mobileNumber || '',
+      designation: employee.designation || '',
+      roleId: employee.roleId || '',
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditEmployee = async (e) => {
+    e.preventDefault();
+    try {
+      await updateEmployee(id, editForm);
+      setEmployee({ ...employee, ...editForm });
+      setEditModalOpen(false);
+      addToast('Employee updated successfully', 'success');
+    } catch (error) {
+      addToast('Failed to update employee', 'error');
+    }
+  };
+
+  const handleDeleteEmployee = async () => {
+    try {
+      await deleteEmployee(id);
+      setDeleteModalOpen(false);
+      addToast('Employee deleted successfully', 'success');
+      navigate('/employees');
+    } catch (error) {
+      addToast('Failed to delete employee', 'error');
+    }
+  };
+
   if (!employee) return null;
 
   const columns = [
@@ -97,7 +160,9 @@ const EmployeeDetails = () => {
               <StatusBadge status={employee.status} />
             </div>
           </div>
-          <div>
+          <div className="profile-actions-group">
+             <Button variant="outline" size="sm" onClick={openEditModal} icon={<Edit size={16} />}>Edit</Button>
+             <Button variant="light-danger" size="sm" onClick={() => setDeleteModalOpen(true)} icon={<Trash2 size={16} />}>Delete</Button>
              <Button 
                 variant={employee.status === 'active' ? "danger" : "primary"} 
                 onClick={handleToggleStatus}
@@ -156,6 +221,82 @@ const EmployeeDetails = () => {
           />
         </div>
       </div>
+
+      {/* Edit Employee Modal */}
+      <Modal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title="Edit Employee"
+      >
+        <form onSubmit={handleEditEmployee} className="add-employee-form" autoComplete="off">
+          <Input 
+            label="Full Name" 
+            required 
+            placeholder="Enter full name" 
+            value={editForm.employeeName} 
+            onChange={(e) => setEditForm({...editForm, employeeName: e.target.value})} 
+          />
+          <Input 
+            label="Email Address" 
+            type="email" 
+            required 
+            placeholder="Enter email address" 
+            value={editForm.email} 
+            onChange={(e) => setEditForm({...editForm, email: e.target.value})} 
+            autoComplete="new-password"
+          />
+          <Input 
+            label="Phone Number" 
+            placeholder="Enter phone number" 
+            value={editForm.mobileNumber} 
+            onChange={(e) => setEditForm({...editForm, mobileNumber: e.target.value})} 
+          />
+          <div className="form-row">
+            <Input 
+              label="Designation" 
+              required 
+              placeholder="e.g. Sales Executive" 
+              value={editForm.designation} 
+              onChange={(e) => setEditForm({...editForm, designation: e.target.value})} 
+            />
+            <div className="input-group">
+              <label className="input-label">System Role</label>
+              <select 
+                required 
+                className="select-input" 
+                value={editForm.roleId} 
+                onChange={(e) => setEditForm({...editForm, roleId: e.target.value})}
+              >
+                <option value="">Select Role</option>
+                {roles.map(r => (
+                  <option key={r.roleId} value={r.roleId}>{r.roleName}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="form-actions mt-4">
+            <Button type="button" variant="ghost" onClick={() => setEditModalOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="primary">Update Employee</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Delete Employee"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={handleDeleteEmployee}>Delete</Button>
+          </>
+        }
+      >
+        <p>Are you sure you want to permanently delete <strong>{employee.employeeName}</strong>?</p>
+        <p className="status-warning">This action cannot be undone.</p>
+      </Modal>
 
     </div>
   );
