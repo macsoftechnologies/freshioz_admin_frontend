@@ -7,7 +7,7 @@ import StatusBadge from '../../components/common/StatusBadge';
 import Modal from '../../components/common/Modal';
 import ImageUpload from '../../components/common/ImageUpload';
 import { useToast } from '../../context/ToastContext';
-import { Plus, Edit, CheckCircle, XCircle, Filter, Trash2 } from 'lucide-react';
+import { Plus, Edit, CheckCircle, XCircle, Filter, Trash2, MapPin } from 'lucide-react';
 import { getOnboardings, addOnboarding, updateOnboarding, updateOnboardingStatus, deleteOnboarding } from '../../services/onboardingService';
 import { getUser } from '../../services/authService';
 import { API_BASE_URL } from '../../services/api';
@@ -42,6 +42,13 @@ const Onboarding = () => {
 
   // Image upload
   const [photos, setPhotos] = useState([]);
+
+  // GPS coordinates
+  const [gpsLat, setGpsLat] = useState('');
+  const [gpsLng, setGpsLng] = useState('');
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [fullAddress, setFullAddress] = useState('');
+  const [addressLoading, setAddressLoading] = useState(false);
 
   const fetchOnboardings = async (overrides = {}) => {
     setLoading(true);
@@ -83,12 +90,69 @@ const Onboarding = () => {
     return false;
   };
 
+  const fetchAddressFromCoords = async (lat, lon) => {
+    if (!lat || !lon) return;
+    setAddressLoading(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`,
+        {
+          headers: {
+            'Accept-Language': 'en',
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.display_name) {
+          setFullAddress(data.display_name);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching address from coordinates:', err);
+    } finally {
+      setAddressLoading(false);
+    }
+  };
+
+  const detectGpsLocation = (autoReverseGeocode = true) => {
+    if (!navigator.geolocation) {
+      addToast('Geolocation is not supported by your browser', 'error');
+      return;
+    }
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude.toFixed(6);
+        const lng = position.coords.longitude.toFixed(6);
+        setGpsLat(lat);
+        setGpsLng(lng);
+        setGpsLoading(false);
+        addToast('GPS coordinates detected successfully', 'success');
+
+        if (autoReverseGeocode) {
+          await fetchAddressFromCoords(lat, lng);
+        }
+      },
+      (error) => {
+        setGpsLoading(false);
+        console.warn('Geolocation error:', error);
+        addToast('Please enable GPS / location permission to auto-detect coordinates', 'error');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const openAddModal = () => {
     setIsEditMode(false);
     setOnboardingType('APARTMENT');
     setPhotos([]);
     setEditForm({});
+    setGpsLat('');
+    setGpsLng('');
+    setFullAddress('');
     setAddModalOpen(true);
+    detectGpsLocation(true);
   };
 
   const openEditModal = () => {
@@ -105,6 +169,9 @@ const Onboarding = () => {
       latitude: selectedOnboarding.latitude || '',
       longitude: selectedOnboarding.longitude || '',
     });
+    setFullAddress(selectedOnboarding.fullAddress || '');
+    setGpsLat(selectedOnboarding.latitude || '');
+    setGpsLng(selectedOnboarding.longitude || '');
     // Load existing images as previews
     const existingImages = Array.isArray(selectedOnboarding.images) 
       ? selectedOnboarding.images 
@@ -127,8 +194,8 @@ const Onboarding = () => {
     formData.append('fullAddress', fields.fullAddress);
     formData.append('contactPersonName', fields.contactPersonName);
     formData.append('contactPhone', fields.contactPhone);
-    formData.append('latitude', Number(fields.latitude));
-    formData.append('longitude', Number(fields.longitude));
+    formData.append('latitude', Number(fields.latitude || gpsLat || 0));
+    formData.append('longitude', Number(fields.longitude || gpsLng || 0));
     if (fields.flatsCount) formData.append('flatsCount', Number(fields.flatsCount));
     if (fields.residentsCount) formData.append('residentsCount', Number(fields.residentsCount));
     
@@ -148,11 +215,11 @@ const Onboarding = () => {
     const fields = {
       communityName: form.get('communityName'),
       type: form.get('type'),
-      fullAddress: form.get('fullAddress'),
+      fullAddress: form.get('fullAddress') || fullAddress,
       contactPersonName: form.get('contactPersonName'),
       contactPhone: form.get('contactPhone'),
-      latitude: form.get('latitude'),
-      longitude: form.get('longitude'),
+      latitude: gpsLat || form.get('latitude'),
+      longitude: gpsLng || form.get('longitude'),
       flatsCount: form.get('flatsCount'),
       residentsCount: form.get('residentsCount'),
     };
@@ -222,6 +289,9 @@ const Onboarding = () => {
       latitude: row.latitude || '',
       longitude: row.longitude || '',
     });
+    setFullAddress(row.fullAddress || '');
+    setGpsLat(row.latitude || '');
+    setGpsLng(row.longitude || '');
     // Load existing images as previews
     const existingImages = Array.isArray(row.images) 
       ? row.images 
@@ -387,6 +457,66 @@ const Onboarding = () => {
                   <span className="onboarding-details-value">{selectedOnboarding.createdAt ? new Date(selectedOnboarding.createdAt).toLocaleString() : '-'}</span>
                 </div>
 
+                {/* Location Map in Details Modal without stamps */}
+                {selectedOnboarding.latitude && selectedOnboarding.longitude && (
+                  <div className="onboarding-details-item" style={{ gridColumn: '1 / -1' }}>
+                    <span className="onboarding-details-label">Location on Map</span>
+                    <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border)', height: '180px', marginTop: '0.5rem' }}>
+                      <iframe
+                        title="Details Map"
+                        width="100%"
+                        height="100%"
+                        frameBorder="0"
+                        scrolling="no"
+                        style={{ display: 'block', width: '100%', height: '100%', border: 'none' }}
+                        srcDoc={`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #map { width: 100%; height: 100%; overflow: hidden; background: #f1f5f9; }
+    .leaflet-control-attribution, .leaflet-control-zoom, .leaflet-control { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    try {
+      var map = L.map('map', {
+        center: [${Number(selectedOnboarding.latitude)}, ${Number(selectedOnboarding.longitude)}],
+        zoom: 16,
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false
+      });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+      var icon = L.divIcon({
+        className: 'clean-map-marker',
+        html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="34" height="34" fill="#22c55e" stroke="#15803d" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>',
+        iconSize: [34, 34],
+        iconAnchor: [17, 34]
+      });
+      L.marker([${Number(selectedOnboarding.latitude)}, ${Number(selectedOnboarding.longitude)}], { icon: icon }).addTo(map);
+    } catch (e) {
+      console.error(e);
+    }
+  </script>
+</body>
+</html>`}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Show uploaded images if available */}
                 {(selectedOnboarding.images?.length > 0 || selectedOnboarding.image) && (
                   <div className="onboarding-details-item" style={{ gridColumn: '1 / -1' }}>
@@ -450,14 +580,22 @@ const Onboarding = () => {
           
           <div className="form-group-col mt-3">
              <div className="input-group">
-                <label className="input-label">Full Address</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <label className="input-label" style={{ margin: 0 }}>Full Address</label>
+                  {addressLoading && (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 500 }}>
+                      Auto-filling address from GPS...
+                    </span>
+                  )}
+                </div>
                 <textarea 
                   name="fullAddress" 
                   required 
                   className="textarea-input" 
                   placeholder="Street address..." 
                   rows="2"
-                  defaultValue={isEditMode ? editForm.fullAddress : ''}
+                  value={fullAddress}
+                  onChange={(e) => setFullAddress(e.target.value)}
                 ></textarea>
              </div>
           </div>
@@ -498,30 +636,99 @@ const Onboarding = () => {
             />
           </div>
           
-          <div className="form-row mt-3">
-            <Input 
-              label="Latitude" 
-              name="latitude" 
-              type="number" 
-              step="any" 
-              required 
-              placeholder="e.g. 12.9250" 
-              defaultValue={isEditMode ? editForm.latitude : ''} 
-            />
-            <Input 
-              label="Longitude" 
-              name="longitude" 
-              type="number" 
-              step="any" 
-              required 
-              placeholder="e.g. 77.6890" 
-              defaultValue={isEditMode ? editForm.longitude : ''} 
-            />
+          {/* Hidden inputs to pass latitude & longitude to backend without showing in frontend */}
+          <input type="hidden" name="latitude" value={gpsLat} />
+          <input type="hidden" name="longitude" value={gpsLng} />
+
+          {/* Clean Location Map Preview without stamps and without dragging */}
+          <div className="location-map-preview mt-3">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', margin: 0 }}>
+                <MapPin size={15} style={{ color: 'var(--primary)' }} /> Location on Map
+              </label>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                loading={gpsLoading || addressLoading}
+                onClick={() => detectGpsLocation(true)}
+                icon={<MapPin size={14} />}
+                style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}
+              >
+                {gpsLoading ? 'Detecting...' : addressLoading ? 'Fetching Address...' : 'Refresh Location'}
+              </Button>
+            </div>
+
+            {gpsLat && gpsLng && !isNaN(Number(gpsLat)) && !isNaN(Number(gpsLng)) ? (
+              <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border)', height: '200px' }}>
+                <iframe
+                  title="Location Map"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  scrolling="no"
+                  style={{ display: 'block', width: '100%', height: '100%', border: 'none' }}
+                  srcDoc={`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #map { width: 100%; height: 100%; overflow: hidden; background: #f1f5f9; }
+    .leaflet-control-attribution, .leaflet-control-zoom, .leaflet-control { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    try {
+      var map = L.map('map', {
+        center: [${Number(gpsLat)}, ${Number(gpsLng)}],
+        zoom: 16,
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false
+      });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+      var icon = L.divIcon({
+        className: 'clean-map-marker',
+        html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="34" height="34" fill="#22c55e" stroke="#15803d" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>',
+        iconSize: [34, 34],
+        iconAnchor: [17, 34]
+      });
+      L.marker([${Number(gpsLat)}, ${Number(gpsLng)}], { icon: icon }).addTo(map);
+    } catch (e) {
+      console.error(e);
+    }
+  </script>
+</body>
+</html>`}
+                />
+              </div>
+            ) : (
+              <div style={{ height: '140px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'var(--background)', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border)' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  {gpsLoading ? 'Detecting location via GPS...' : 'Location coordinates not detected'}
+                </span>
+                {!gpsLoading && (
+                  <Button type="button" variant="outline" size="sm" onClick={() => detectGpsLocation(true)} icon={<MapPin size={14} />}>
+                    Detect Location
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
 
-
           <div className="form-actions mt-6">
-            <Button type="button" variant="ghost" onClick={() => { setAddModalOpen(false); setIsEditMode(false); setPhotos([]); }}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={() => { setAddModalOpen(false); setIsEditMode(false); setPhotos([]); setFullAddress(''); setGpsLat(''); setGpsLng(''); }}>Cancel</Button>
             <Button type="submit" variant="primary">{isEditMode ? 'Update Request' : 'Submit Request'}</Button>
           </div>
         </form>
