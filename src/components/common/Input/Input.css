@@ -8,6 +8,10 @@
   margin-bottom: 0.25rem;
 }
 
+.filter-wrap .input-group {
+  min-width: 150px;
+}
+
 /* Force equal 8px radius on all 4 corners, overriding Bootstrap's left-radius resets */
 .input-group > :not(:first-child):not(.dropdown-menu),
 .input-group > .input-field,

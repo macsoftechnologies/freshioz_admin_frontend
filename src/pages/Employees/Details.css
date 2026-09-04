@@ -152,6 +152,18 @@
   outline: none;
   transition: all 0.2s ease;
   font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  line-height: 1.5;
+  display: block;
+}
+
+/* Fix for WebKit/Mobile browsers where date inputs can hide placeholders */
+.date-input::-webkit-datetime-edit,
+.date-input::-webkit-datetime-edit-fields-wrapper {
+  display: flex;
+  align-items: center;
 }
 
 .date-input:focus {
