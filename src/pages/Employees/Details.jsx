@@ -147,7 +147,7 @@ const EmployeeDetails = () => {
     <div className="employee-details-page">
       <div className="page-header">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/employees')}><ArrowLeft size={20} /></Button>
+          <Button variant="primary" size="sm" onClick={() => navigate('/employees')}><ArrowLeft size={20} /></Button>
           <h2>Employee Profile</h2>
         </div>
       </div>
