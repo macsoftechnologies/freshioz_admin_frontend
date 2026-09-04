@@ -104,7 +104,6 @@ textarea:focus,
 }
 
 /* Page Header Action Buttons (+ Add Employee, + New Onboarding, + Create Role) */
-.page-header .btn,
 .page-header .btn-primary {
   background: linear-gradient(135deg, #ff9800 0%, #ea580c 100%) !important;
   color: #ffffff !important;
@@ -116,7 +115,6 @@ textarea:focus,
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.page-header .btn:hover,
 .page-header .btn-primary:hover {
   background: linear-gradient(135deg, #f97316 0%, #c2410c 100%) !important;
   box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4) !important;
@@ -281,15 +279,21 @@ textarea:focus,
 
 @media (max-width: 640px) {
   .page-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.85rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
-  .page-header .btn,
+  .page-header h2 {
+    font-size: 1.5rem;
+  }
+
   .page-header .btn-primary {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem;
   }
 }
 

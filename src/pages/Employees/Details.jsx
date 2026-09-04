@@ -153,49 +153,39 @@ const EmployeeDetails = () => {
       </div>
 
       <div className="profile-card mt-6">
-        <div className="profile-header-large">
-          <div className="profile-header-left">
+        <div className="profile-content">
+          <div className="profile-identity">
             <div className="profile-avatar-large">
               {employee.employeeName ? employee.employeeName.charAt(0) : <User size={40} />}
             </div>
-            <div className="profile-title-block-large">
+            <div className="profile-title-block">
               <h3>{employee.employeeName}</h3>
               <p>{employee.designation || 'No Designation'}</p>
               <StatusBadge status={employee.status} />
             </div>
           </div>
-          <div className="profile-actions-group">
-             <Button variant="outline" size="sm" onClick={openEditModal} icon={<Edit size={16} />}>Edit</Button>
-             <Button variant="light-danger" size="sm" onClick={() => setDeleteModalOpen(true)} icon={<Trash2 size={16} />}>Delete</Button>
-             <Button 
-                variant={employee.status === 'active' ? "danger" : "primary"} 
-                onClick={handleToggleStatus}
-              >
-                {employee.status === 'active' ? 'Deactivate Account' : 'Activate Account'}
-              </Button>
-          </div>
-        </div>
-        
-        <div className="profile-grid-large">
-          <div className="profile-item-large">
-            <span className="profile-label-large">Employee ID</span>
-            <span className="profile-value-large">{employee.employeeId || id}</span>
-          </div>
-          <div className="profile-item-large">
-            <span className="profile-label-large">System Role</span>
-            <span className="profile-value-large capitalize">{employee.role?.replace('_', ' ')}</span>
-          </div>
-          <div className="profile-item-large">
-            <span className="profile-label-large">Email Address</span>
-            <span className="profile-value-large">{employee.email}</span>
-          </div>
-          <div className="profile-item-large">
-            <span className="profile-label-large">Mobile Number</span>
-            <span className="profile-value-large">{employee.mobileNumber || '-'}</span>
-          </div>
-          <div className="profile-item-large">
-            <span className="profile-label-large">Joining Date</span>
-            <span className="profile-value-large">{employee.joiningDate || (employee.createdAt && new Date(employee.createdAt).toLocaleDateString()) || '-'}</span>
+          <div className="profile-divider"></div>
+          <div className="profile-details-grid">
+            <div className="profile-detail-item">
+              <span className="profile-label">Employee ID</span>
+              <span className="profile-value">{employee.employeeId || id}</span>
+            </div>
+            <div className="profile-detail-item">
+              <span className="profile-label">System Role</span>
+              <span className="profile-value capitalize">{employee.role?.replace('_', ' ')}</span>
+            </div>
+            <div className="profile-detail-item">
+              <span className="profile-label">Email Address</span>
+              <span className="profile-value">{employee.email}</span>
+            </div>
+            <div className="profile-detail-item">
+              <span className="profile-label">Mobile Number</span>
+              <span className="profile-value">{employee.mobileNumber || '-'}</span>
+            </div>
+            <div className="profile-detail-item">
+              <span className="profile-label">Joining Date</span>
+              <span className="profile-value">{employee.joiningDate || (employee.createdAt && new Date(employee.createdAt).toLocaleDateString()) || '-'}</span>
+            </div>
           </div>
         </div>
       </div>
